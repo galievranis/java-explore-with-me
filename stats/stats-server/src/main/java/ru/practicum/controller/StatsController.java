@@ -31,7 +31,7 @@ public class StatsController {
     private List<ViewStatsDto> getStats(@RequestParam(name = "start") String start,
                                         @RequestParam(name = "end") String end,
                                         @RequestParam(name = "uris", required = false) List<String> uris,
-                                        @RequestParam(name = "unique", defaultValue = "false") boolean unique) {
+                                        @RequestParam(name = "unique", defaultValue = "false") Boolean unique) {
         log.info("GET request at '/stats' with params start={}, end={}, uris={}, unique={}", start, end, uris, unique);
         String decodedStart = URLDecoder.decode(start, StandardCharsets.UTF_8);
         String decodedEnd = URLDecoder.decode(end, StandardCharsets.UTF_8);
