@@ -1,16 +1,21 @@
 package ru.practicum;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StatsClientImpl implements StatsClient {
@@ -28,6 +33,7 @@ public class StatsClientImpl implements StatsClient {
                 .timestamp(timestamp)
                 .build();
 
+        log.info("Saving endpoint hit with app={}, uri={}, ip={}, timestamp={}", app, uri, ip, timestamp);
         webClient.post()
                 .uri("/hit")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -39,18 +45,23 @@ public class StatsClientImpl implements StatsClient {
 
     @Override
     public List<ViewStatsDto> getStats(String start, String end, List<String> uris, Boolean unique) {
-        StringBuilder uri = new StringBuilder("/stats?start=" + start + "&end=" + end);
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/stats");
+        uriBuilder.queryParam("start", start);
+        uriBuilder.queryParam("end", end);
 
-        if (uris != null) {
-            uri.append("&uris=").append(uris);
+        if (uris != null && !uris.isEmpty()) {
+            String urisParam = StringUtils.join(uris, ',');
+            uriBuilder.queryParam("uris", urisParam);
         }
 
         if (unique != null) {
-            uri.append("&unique=").append(unique);
+            uriBuilder.queryParam("unique", unique);
         }
 
+        URI uri = uriBuilder.build().toUri();
+
         return webClient.get()
-                .uri(String.valueOf(uri))
+                .uri(uri.toASCIIString())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToFlux(ViewStatsDto.class)

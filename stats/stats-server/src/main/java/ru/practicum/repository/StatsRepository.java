@@ -37,5 +37,4 @@ public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
                     "GROUP BY e.app, e.uri " +
                     "ORDER BY COUNT(e.ip) DESC")
     List<ViewStatsDto> getViewStats(LocalDateTime start, LocalDateTime end);
-
 }
