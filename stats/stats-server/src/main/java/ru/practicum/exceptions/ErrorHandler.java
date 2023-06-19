@@ -30,7 +30,7 @@ public class ErrorHandler {
 
     @ExceptionHandler({IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleIllegalArgumentEx(final RuntimeException e) {
+    public Map<String, String> handleIllegalArgumentException(final RuntimeException e) {
         log.warn("Invalid value. Error details: {}.", e.getMessage());
         return Map.of(ERROR, e.getMessage());
     }
