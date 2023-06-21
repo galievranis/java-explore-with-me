@@ -26,10 +26,11 @@ public class StatsController {
     }
 
     @GetMapping("/stats")
-    private List<ViewStatsDto> getStats(@RequestParam(name = "start") String start,
-                                        @RequestParam(name = "end") String end,
-                                        @RequestParam(name = "uris", required = false) List<String> uris,
-                                        @RequestParam(name = "unique", defaultValue = "false") Boolean unique) {
+    @ResponseStatus(HttpStatus.OK)
+    private List<ViewStatsDto> getStats(@RequestParam String start,
+                                        @RequestParam String end,
+                                        @RequestParam(required = false) List<String> uris,
+                                        @RequestParam(defaultValue = "false") Boolean unique) {
         log.info("GET request at '/stats' with params start={}, end={}, uris={}, unique={}", start, end, uris, unique);
         return statsService.getStats(start, end, uris, unique);
     }
