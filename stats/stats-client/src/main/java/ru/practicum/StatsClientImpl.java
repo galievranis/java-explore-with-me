@@ -25,7 +25,7 @@ import java.util.List;
 public class StatsClientImpl implements StatsClient {
 
     private final WebClient webClient;
-    private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public StatsClientImpl(@Value("${stats-server.url}") String serverUrl) {
         webClient = WebClient.builder()
@@ -48,7 +48,7 @@ public class StatsClientImpl implements StatsClient {
                 .app(app)
                 .uri(uri)
                 .ip(ip)
-                .timestamp(localDateTime.format(FORMATTER))
+                .timestamp(localDateTime.format(dateTimeFormatter))
                 .build();
 
         log.info("Saving endpoint hit with app={}, uri={}, ip={}, timestamp={}", app, uri, ip, localDateTime);
@@ -73,8 +73,8 @@ public class StatsClientImpl implements StatsClient {
     @Override
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/stats");
-        uriBuilder.queryParam("start", start.format(FORMATTER));
-        uriBuilder.queryParam("end", end.format(FORMATTER));
+        uriBuilder.queryParam("start", start.format(dateTimeFormatter));
+        uriBuilder.queryParam("end", end.format(dateTimeFormatter));
 
         if (uris != null && !uris.isEmpty()) {
             String urisParam = StringUtils.join(uris, ',');

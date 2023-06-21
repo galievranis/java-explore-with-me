@@ -10,5 +10,4 @@ public interface StatsClient {
     void saveEndpoint(String app, String uri, String ip);
 
     List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique);
-
 }
