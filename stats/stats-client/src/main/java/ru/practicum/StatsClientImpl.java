@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -15,6 +16,7 @@ import ru.practicum.dto.ViewStatsDto;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
 import java.util.List;
 
 @Slf4j
@@ -41,6 +43,7 @@ public class StatsClientImpl implements StatsClient {
     @Override
     public void saveEndpoint(String app, String uri, String ip) {
         LocalDateTime localDateTime = LocalDateTime.now();
+
         EndpointHitDto endpointHitDto = EndpointHitDto.builder()
                 .app(app)
                 .uri(uri)

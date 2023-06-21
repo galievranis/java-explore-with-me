@@ -41,4 +41,3 @@ public class ErrorHandler {
         log.warn("Start must be before end. Error details: {}.", e.getMessage());
         return Map.of(ERROR, e.getMessage());
     }
-}
