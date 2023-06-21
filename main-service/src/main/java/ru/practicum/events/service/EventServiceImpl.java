@@ -491,8 +491,8 @@ public class EventServiceImpl implements EventService {
 
         return participationRequestRepository.findAllByEventInAndStatus(publishedEvents, RequestStatus.CONFIRMED)
                 .stream()
-                .collect(Collectors.groupingBy(eventRequest ->
-                        eventRequest.getEvent().getId(), Collectors.counting()));
+                .collect(Collectors.groupingBy(participationRequest ->
+                        participationRequest.getEvent().getId(), Collectors.counting()));
     }
 
     private List<Event> getPublishedEvents(List<Event> events) {
