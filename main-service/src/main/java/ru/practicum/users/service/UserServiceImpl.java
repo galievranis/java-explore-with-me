@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.exceptions.ObjectNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.users.mapper.UserMapper;
 import ru.practicum.users.model.dto.NewUserRequest;
 import ru.practicum.users.model.dto.UserDto;
@@ -18,12 +19,14 @@ import java.util.List;
 @Slf4j
 @Service
 @AllArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
 
     @Override
+    @Transactional
     public UserDto createUser(NewUserRequest newUserRequest) {
         log.info("Creating user with body={}", newUserRequest);
 
@@ -52,27 +55,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    @Transactional
+    public void deleteUser(Long id) {
         log.info("Removing user with id={}", id);
 
-        userExistsById(id);
+        userExists(id);
         userRepository.deleteById(id);
     }
 
     @Override
-    public void userExistsById(Long id) {
+    public void userExists(Long id) {
         log.info("Checking that user with id={} exists", id);
 
         if (!userRepository.existsById(id)) {
-            throw new ObjectNotFoundException("User", id);
+            throw new NotFoundException("User", id);
         }
     }
 
     @Override
-    public User getUserById(Long id) {
-        log.info("Getting user with id={}", id);
+    public User getUserModelById(Long id) {
+        log.info("Getting user model by id={}", id);
 
         return userRepository.findById(id).orElseThrow(() ->
-                new ObjectNotFoundException("User", id));
+                new NotFoundException("User", id));
     }
 }

@@ -12,9 +12,9 @@ public interface UserService {
 
     List<UserDto> getUsersByIds(List<Long> ids, Integer from, Integer size);
 
-    void deleteById(Long id);
+    void deleteUser(Long id);
 
-    void userExistsById(Long id);
+    void userExists(Long id);
 
-    User getUserById(Long id);
+    User getUserModelById(Long id);
 }

@@ -45,6 +45,6 @@ public class UserControllerAdmin {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUserById(@PathVariable Long userId) {
         log.info("DELETE at '/admin/users/{}' to delete user with id={}", userId, userId);
-        userService.deleteById(userId);
+        userService.deleteUser(userId);
     }
 }

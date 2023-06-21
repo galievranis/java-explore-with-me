@@ -7,18 +7,19 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ServerWebInputException;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.HttpStatus.CONFLICT;
 
 @Slf4j
-@RestController
+@RestControllerAdvice
 public class ErrorHandler {
 
     // 400
@@ -82,9 +83,23 @@ public class ErrorHandler {
     }
 
     // 404
-    @ExceptionHandler(ObjectNotFoundException.class)
+    @ExceptionHandler({NoSuchElementException.class})
     @ResponseStatus(NOT_FOUND)
-    public ApiError handleNotFound(final ObjectNotFoundException e) {
+    public ApiError handleNoSuchElementException(final NoSuchElementException e) {
+        return ApiError.builder()
+                .errors(Arrays.stream(e.getStackTrace())
+                        .map(StackTraceElement::toString)
+                        .collect(Collectors.toList()))
+                .status(NOT_FOUND)
+                .reason("Object not found")
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(NOT_FOUND)
+    public ApiError handleNotFound(final NotFoundException e) {
         log.debug(e.toString());
         return ApiError.builder()
                 .errors(Arrays.stream(e.getStackTrace())

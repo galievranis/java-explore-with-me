@@ -14,6 +14,7 @@ import ru.practicum.dto.ViewStatsDto;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -22,6 +23,7 @@ import java.util.List;
 public class StatsClientImpl implements StatsClient {
 
     private final WebClient webClient;
+    private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public StatsClientImpl(@Value("${stats-server.url}") String serverUrl) {
         webClient = WebClient.builder()
@@ -43,7 +45,7 @@ public class StatsClientImpl implements StatsClient {
                 .app(app)
                 .uri(uri)
                 .ip(ip)
-                .timestamp(String.valueOf(localDateTime))
+                .timestamp(localDateTime.format(FORMATTER))
                 .build();
 
         log.info("Saving endpoint hit with app={}, uri={}, ip={}, timestamp={}", app, uri, ip, localDateTime);
@@ -66,10 +68,10 @@ public class StatsClientImpl implements StatsClient {
      * @return a list of ViewStatsDto objects representing the statistics
      */
     @Override
-    public List<ViewStatsDto> getStats(String start, String end, List<String> uris, Boolean unique) {
+    public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/stats");
-        uriBuilder.queryParam("start", start);
-        uriBuilder.queryParam("end", end);
+        uriBuilder.queryParam("start", start.format(FORMATTER));
+        uriBuilder.queryParam("end", end.format(FORMATTER));
 
         if (uris != null && !uris.isEmpty()) {
             String urisParam = StringUtils.join(uris, ',');
