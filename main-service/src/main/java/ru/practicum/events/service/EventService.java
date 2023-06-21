@@ -21,7 +21,7 @@ public interface EventService {
     EventRequestStatusUpdateResult updateRequestStatus(
             Long userId,
             Long eventId,
-            EventRequestStatusUpdateRequest EventRequestStatusUpdateRequest);
+            EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest);
 
     EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest updateEventAdminRequest);
 

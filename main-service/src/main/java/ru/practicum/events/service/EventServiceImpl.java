@@ -134,7 +134,7 @@ public class EventServiceImpl implements EventService {
         if (updateEventUserRequest.getStateAction() != null) {
             if (updateEventUserRequest.getStateAction() == EventStateActionUser.CANCEL_REVIEW) {
                 event.setState(EventState.CANCELED);
-            } else if (updateEventUserRequest.getStateAction() == EventStateActionUser.SEND_TO_REVIEW){
+            } else if (updateEventUserRequest.getStateAction() == EventStateActionUser.SEND_TO_REVIEW) {
                 event.setState(EventState.PENDING);
             }
         }
@@ -158,6 +158,7 @@ public class EventServiceImpl implements EventService {
                 if (event.getState() != EventState.PENDING) {
                     throw new ConflictException("Cannot publish the event because it's not in the right state: " + event.getState());
                 }
+
                 event.setPublishedOn(LocalDateTime.now());
                 event.setState(EventState.PUBLISHED);
             } else if (updateEventAdminRequest.getStateAction() == EventStateActionAdmin.REJECT_EVENT) {
@@ -297,9 +298,9 @@ public class EventServiceImpl implements EventService {
 
         List<EventShortDto> eventShortDtoList = EventMapper.toEventShortDto(events);
 
-        for (EventShortDto dto : eventShortDtoList) {
-            dto.setViews(views.getOrDefault(dto.getId(), 0L));
-            dto.setConfirmedRequests(confirmedRequests.getOrDefault(dto.getId(), 0L));
+        for (EventShortDto eventShortDto : eventShortDtoList) {
+            eventShortDto.setViews(views.getOrDefault(eventShortDto.getId(), 0L));
+            eventShortDto.setConfirmedRequests(confirmedRequests.getOrDefault(eventShortDto.getId(), 0L));
         }
 
         return eventShortDtoList;
@@ -347,9 +348,9 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
 
 
-        for (EventFullDto dto : eventFullDtoList) {
-            dto.setViews(views.getOrDefault(dto.getId(), 0L));
-            dto.setConfirmedRequests(confirmedRequests.getOrDefault(dto.getId(), 0L));
+        for (EventFullDto eventFullDto : eventFullDtoList) {
+            eventFullDto.setViews(views.getOrDefault(eventFullDto.getId(), 0L));
+            eventFullDto.setConfirmedRequests(confirmedRequests.getOrDefault(eventFullDto.getId(), 0L));
         }
 
         return eventFullDtoList;
@@ -390,9 +391,9 @@ public class EventServiceImpl implements EventService {
         Map<Long, Integer> eventsParticipantLimit = new HashMap<>();
         events.forEach(event -> eventsParticipantLimit.put(event.getId(), event.getParticipantLimit()));
 
-        for (EventShortDto dto : eventShortDtoList) {
-            dto.setViews(views.getOrDefault(dto.getId(), 0L));
-            dto.setConfirmedRequests(confirmedRequests.getOrDefault(dto.getId(), 0L));
+        for (EventShortDto eventShortDto : eventShortDtoList) {
+            eventShortDto.setViews(views.getOrDefault(eventShortDto.getId(), 0L));
+            eventShortDto.setConfirmedRequests(confirmedRequests.getOrDefault(eventShortDto.getId(), 0L));
         }
 
         if (onlyAvailable) {
