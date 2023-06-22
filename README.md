@@ -2,4 +2,4 @@
 Template repository for ExploreWithMe project.
 
 ## Pull-request link
-https://github.com/galievranis/java-explore-with-me/pull/5
+[link here](https://github.com/galievranis/java-explore-with-me/pull/5)
