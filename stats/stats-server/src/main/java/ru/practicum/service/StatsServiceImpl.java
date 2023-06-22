@@ -6,10 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
-import ru.practicum.exceptions.StartIsAfterEndException;
+import ru.practicum.exceptions.ValidationRequestException;
 import ru.practicum.mapper.EndpointHitMapper;
-import ru.practicum.repository.StatsRepository;
 import ru.practicum.model.EndpointHit;
+import ru.practicum.repository.StatsRepository;
+
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,11 +37,11 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<ViewStatsDto> getStats(String start, String end, List<String> uris, Boolean unique) {
-        LocalDateTime startTime = LocalDateTime.parse(start, FORMATTER);
-        LocalDateTime endTime = LocalDateTime.parse(end, FORMATTER);
+        LocalDateTime startTime = LocalDateTime.parse(URLDecoder.decode(start, StandardCharsets.UTF_8), FORMATTER);
+        LocalDateTime endTime = LocalDateTime.parse(URLDecoder.decode(end, StandardCharsets.UTF_8), FORMATTER);
 
         if (startTime.isAfter(endTime)) {
-            throw new StartIsAfterEndException("Start can't be after end");
+            throw new ValidationRequestException("Start can't be after end");
         }
 
         if (unique) {

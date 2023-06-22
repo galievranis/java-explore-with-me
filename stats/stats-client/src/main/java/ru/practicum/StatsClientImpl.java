@@ -1,8 +1,10 @@
 package ru.practicum;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -13,27 +15,43 @@ import ru.practicum.dto.ViewStatsDto;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
+@PropertySource("classpath:stats-application.properties")
 public class StatsClientImpl implements StatsClient {
 
-    private final WebClient webClient = WebClient.builder()
-            .baseUrl("http://localhost:9090")
-            .build();
+    private final WebClient webClient;
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    public StatsClientImpl(@Value("${stats-server.url}") String serverUrl) {
+        webClient = WebClient.builder()
+            .baseUrl(serverUrl)
+            .build();
+    }
+
+    /**
+     * Saves endpoint hit information.
+     *
+     * @param app application name
+     * @param uri URI of the endpoint hit
+     * @param ip IP address of the requester
+     */
     @Override
-    public void saveEndpoint(String app, String uri, String ip, LocalDateTime timestamp) {
+    public void saveEndpoint(String app, String uri, String ip) {
+        LocalDateTime localDateTime = LocalDateTime.now();
+
         EndpointHitDto endpointHitDto = EndpointHitDto.builder()
                 .app(app)
                 .uri(uri)
                 .ip(ip)
-                .timestamp(timestamp)
+                .timestamp(localDateTime.format(dateTimeFormatter))
                 .build();
 
-        log.info("Saving endpoint hit with app={}, uri={}, ip={}, timestamp={}", app, uri, ip, timestamp);
+        log.info("Saving endpoint hit with app={}, uri={}, ip={}, timestamp={}", app, uri, ip, localDateTime);
         webClient.post()
                 .uri("/hit")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -43,11 +61,20 @@ public class StatsClientImpl implements StatsClient {
                 .block();
     }
 
+    /**
+     * Retrieves statistics by specified time range and URIs.
+     *
+     * @param start start timestamp of the statistic range
+     * @param end end timestamp of the statistic range
+     * @param uris list of URIs to filter the statistics (optional)
+     * @param unique flag indicating whether to retrieve unique statistics (optional)
+     * @return a list of ViewStatsDto objects representing the statistics
+     */
     @Override
-    public List<ViewStatsDto> getStats(String start, String end, List<String> uris, Boolean unique) {
+    public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromPath("/stats");
-        uriBuilder.queryParam("start", start);
-        uriBuilder.queryParam("end", end);
+        uriBuilder.queryParam("start", start.format(dateTimeFormatter));
+        uriBuilder.queryParam("end", end.format(dateTimeFormatter));
 
         if (uris != null && !uris.isEmpty()) {
             String urisParam = StringUtils.join(uris, ',');
