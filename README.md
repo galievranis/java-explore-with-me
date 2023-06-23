@@ -25,6 +25,6 @@
 
 ## Стек технологий
 * Spring Boot
-* PostgreSql
+* PostgreSQL
 * WebClient
 * Docker
